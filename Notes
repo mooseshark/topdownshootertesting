@@ -1,0 +1,10 @@
+- hold mouse to fire 
+- destroy bullet at the edge of the canvas
+- destroy enemies on collision (script this for one part since enemies will follow paths)
+- fix how the ship is fast as fuck boyyyyyyyyyyyyyyyyyyyy
+- add player1 weaponCount to increase the amount of projetiles a player fires
+- make projectile offset so they do not all fire from the same place
+- update speed by creation and velocity for setInterval on the bullet creation
+- change the way firing sound effects are generated to dynamically choose per character
+  also, so sounds can vary beyond a single effect
+- When player gets weapon powerup, draw addtion on ship to right, then left 

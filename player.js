@@ -8,6 +8,9 @@ var xtarget = 0;
 var ytarget = 0;
 var bullets = [];
 
+// variable for setInterval for firing a weapon on mousedown event
+var firingState;
+
 var shotSwitcher = 1;
 var laserSwitcher = 0;
 var laserFiles = [
@@ -25,49 +28,26 @@ function Player () {
   this.w = 20;
   this.h = 20;
   this.velocity = 2
+  this.weapons = {
+    "1": {
+      fireRate: 700,      
+    },
+    "2": {
+      fireRate: 700,
+      firingLocation: [0,35]      
+    },
+    "3": {
+      fireRate: 700,
+      firingLocation: [0,35,-70]      
+    }
+  }
+  this.weaponCount = 3
   this.points = 0;
   this.health = 200;
   this.image = playerImage;
 }
 
-// function playerMove(e) {
-//   // console.log(e);
-//   // 2 keys can be used to set acceleration and decel like keys['KeyW'] && keys['Space']
-//   keys['Space'] ? velocity = 3 : velocity = 2;
 
-//   if ( keys['KeyW'] ) {
-//     if ( Player1.y > 2 ) {
-//       Player1.y -= Player1.velocity;
-//     }
-//   }
-//   if ( keys['KeyS'] ) {
-//     if ( Player1.y < canvas.height - Player1.h - 2 ) {
-//       Player1.y += Player1.velocity;
-//     }
-//   }
-//   if ( keys['KeyA'] ) {
-//     if ( Player1.x > 2 ) {    
-//       Player1.x -= Player1.velocity;
-//     }
-//   }
-//   if ( keys['KeyD'] ) {
-//     if ( Player1.x < canvas.width - Player1.w - 2 ) {
-//       Player1.x += Player1.velocity;
-//     }
-//   }
-//   return false;
-// }
-
-// function playerDraw() {
-//   context.clearRect(0, 0, canvas.width, canvas.height);
-//   context.beginPath();  
-//   context.fillStyle="red";
-//   context.strokeStyle="blue";
-//   context.rect(Player1.x, Player1.y, Player1.w, Player1.h);
-//   context.lineWidth=1;
-//   context.stroke();
-//   context.fill();
-// }
 
 function playerMove(e) {
   //get the distance between the mouse and the ball on both axes
@@ -100,17 +80,6 @@ function playerDraw() {
   newAngle = Math.atan(deltaY / deltaX);
   context.translate(Player1.x + (Player1.w / 2), Player1.y + (Player1.h / 2) );
   context.translate(-Player1.x - (Player1.w / 2),-Player1.y - (Player1.h / 2));
-
-  // This block allows the shit to rotate and is unnecessary if I want the ship to always face forward. 
-  // if (deltaX < 0) {
-  //   context.rotate(newAngle);
-  //   context.scale(-1, 1);
-  // } else {
-  //   context.rotate(newAngle);
-  //   context.scale(1, -1);
-  // }
-  
-  
   context.drawImage(Player1.image, Player1.x - 7, Player1.y - 5,Player1.w * 1.3, Player1.h * 1.3);
   context.restore();
 }
@@ -145,9 +114,46 @@ function mouseMove(e) {
 
 canvas.addEventListener('mousemove', mouseMove, true);
 
-canvas.addEventListener("click", function() {
-  createBullet(mouseX, mouseY, Player1.x, Player1.y);
+canvas.addEventListener("mousedown", function() {
+  // trigger the event when mouse is down
+  // so weapons fire on click and on hold and 
+  // feel less disjointed
+  let fireRate = Player1.weapons[Player1.weaponCount].fireRate;
+
+
+
+  myFunction(fireRate);
+
+
+  // setTimeout(() => {
+  //   createBullet(mouseX, mouseY, Player1.x, Player1.y);
+  // }, fireRate)
+  firingState = setInterval(loopBulletCreation, fireRate);
 });
+
+ // This closure is working to limit firing trigger, but parameters still seem funky
+var myFunction = function(fireRate) {
+  var lastTime = new Date();
+  return function(fireRate) {
+    console.log(fireRate);
+    var now = new Date();
+    if ((now - lastTime) < fireRate) return;
+    lastTime = now; 
+
+    createBullet(mouseX, mouseY, Player1.x, Player1.y);
+
+  };
+}();
+
+canvas.addEventListener("mouseup", function() {
+  clearInterval(firingState);
+});
+
+function loopBulletCreation() {
+  for( let i = 0; i < Player1.weaponCount; i++) {
+    createBullet(mouseX, mouseY, Player1.x, Player1.y);
+  }
+}
 
 /*
 * createBullet - creates the bullet, determines where it should be created 
@@ -160,6 +166,7 @@ canvas.addEventListener("click", function() {
 function createBullet(targetX, targetY, shooterX, shooterY) { 
   if (!gameOver) {
 
+    // play firing sounds 
     laserFiles[laserSwitcher].currentTime = 0.1;
     laserFiles[laserSwitcher].play();
     laserSwitcher++;
@@ -168,26 +175,26 @@ function createBullet(targetX, targetY, shooterX, shooterY) {
     
     }
 
-    // deltaX = targetX - shooterX;
-    // deltaY = targetY - shooterY;
     deltaY = 0 - shooterY; 
     rotation = Math.atan2(deltaY, 0);
     xtarget = Math.cos(rotation);
     ytarget = Math.sin(rotation);
+    for( let i = 0; i < Player1.weaponCount; i++) {
+      shooterX += Player1.weapons[Player1.weaponCount].firingLocation[i];
 
-    bullets.push({
-      active:true,
-      x: shooterX,
-      y: shooterY,
-      speed: 10,
-      xtarget: xtarget,
-      ytarget: ytarget,
-      w: 3,
-      h: 10,
-      color: 'black',
-      angle: rotation
-    });
-
+      bullets.push({
+        active:true,
+        x: shooterX,
+        y: shooterY,
+        speed: 10,
+        xtarget: xtarget,
+        ytarget: ytarget,
+        w: 3,
+        h: 10,
+        color: 'black',
+        angle: rotation
+      });
+    }
   }
 }
 

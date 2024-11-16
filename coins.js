@@ -40,18 +40,6 @@ function createNewCoins() {
   });
 }
 
-// function drawCoins() {
-//   coins.forEach( function(i, j) {
-//     context.beginPath();
-//     context.fillStyle=i.color;
-//     context.strokeStyle=i.color;
-//     context.rect(i.x, i.y, i.w, i.h);
-//     context.lineWidth=1;
-//     context.stroke();
-//     context.fill();
-//   });
-// }
-
 function drawCoins() {
   coins.forEach( function(i, j) {
     context.beginPath();

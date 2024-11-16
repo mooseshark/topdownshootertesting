@@ -26,18 +26,6 @@ function badGuysMove(){
   });
 }
 
-// function badGuysDraw(){
-//   badGuys.forEach( function(i, j) {
-//     context.beginPath();
-//     context.fillStyle="blue";
-//     context.strokeStyle="red";
-//     context.rect(i.x, i.y, i.w, i.h);
-//     context.lineWidth=1;
-//     context.stroke();
-//     context.fill();
-//   });
-// }
-
 function badGuysDraw() {
   badGuys.forEach( function(i, j) {
     context.beginPath();
