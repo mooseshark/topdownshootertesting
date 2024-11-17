@@ -11,9 +11,24 @@ var bullets = [];
 // variable for setInterval for firing a weapon on mousedown event
 var firingState;
 
-var shotSwitcher = 1;
+// map lookup for weapons for maybe slightly faster access to unchanging data
+const PLAYER_WEAPONS = new Map([
+  [1, {
+    fireRate: 700,
+    firingLocation: [0]
+  }],
+  [2, {
+    fireRate: 700,
+    firingLocation: [0,35]      
+  }],
+  [3, {
+    fireRate: 700,
+    firingLocation: [0,35,-70]      
+  }]
+])
+
 var laserSwitcher = 0;
-var laserFiles = [
+const laserFiles = [
   new Audio("laser.mp3"),
   new Audio("laser.mp3"),
   new Audio("laser.mp3"),
@@ -22,26 +37,15 @@ var laserFiles = [
   new Audio("laser.mp3"),    
 ];
 
+// Player Base Mapping
 function Player () {
   this.x = 395;
   this.y = 295;
   this.w = 20;
   this.h = 20;
   this.velocity = 2
-  this.weapons = {
-    "1": {
-      fireRate: 700,      
-    },
-    "2": {
-      fireRate: 700,
-      firingLocation: [0,35]      
-    },
-    "3": {
-      fireRate: 700,
-      firingLocation: [0,35,-70]      
-    }
-  }
-  this.weaponCount = 3
+  this.weapons = PLAYER_WEAPONS
+  this.weaponCount = 1
   this.points = 0;
   this.health = 200;
   this.image = playerImage;
@@ -52,10 +56,10 @@ function Player () {
 function playerMove(e) {
   //get the distance between the mouse and the ball on both axes
   //walk only the an eight of the distance to create a smooth fadeout
-  var dx = (mouseX - Player1.x) * .25;
-  var dy = (mouseY - Player1.y) * .125;
+  let dx = (mouseX - Player1.x) * .25;
+  let dy = (mouseY - Player1.y) * .125;
   //calculate the distance this would move ...
-  var distance = Math.sqrt(dx*dx + dy*dy);
+  let distance = Math.sqrt(dx*dx + dy*dy);
   //... and cap it at 5px
   if(distance > Player1.velocity){
     dx *= Player1.velocity/distance;
@@ -118,25 +122,19 @@ canvas.addEventListener("mousedown", function() {
   // trigger the event when mouse is down
   // so weapons fire on click and on hold and 
   // feel less disjointed
-  let fireRate = Player1.weapons[Player1.weaponCount].fireRate;
+  let fireRate = Player1.weapons.get(Player1.weaponCount).fireRate;
 
+  limitOnClickFireRate(fireRate);
 
-
-  myFunction(fireRate);
-
-
-  // setTimeout(() => {
-  //   createBullet(mouseX, mouseY, Player1.x, Player1.y);
-  // }, fireRate)
   firingState = setInterval(loopBulletCreation, fireRate);
 });
 
  // This closure is working to limit firing trigger, but parameters still seem funky
-var myFunction = function(fireRate) {
-  var lastTime = new Date();
+const limitOnClickFireRate = function() {
+  let lastTime = new Date();
   return function(fireRate) {
     console.log(fireRate);
-    var now = new Date();
+    const now = new Date();
     if ((now - lastTime) < fireRate) return;
     lastTime = now; 
 
@@ -180,7 +178,7 @@ function createBullet(targetX, targetY, shooterX, shooterY) {
     xtarget = Math.cos(rotation);
     ytarget = Math.sin(rotation);
     for( let i = 0; i < Player1.weaponCount; i++) {
-      shooterX += Player1.weapons[Player1.weaponCount].firingLocation[i];
+      shooterX += Player1.weapons.get(Player1.weaponCount).firingLocation[i];
 
       bullets.push({
         active:true,
@@ -202,6 +200,11 @@ function bulletsMove() {
   bullets.forEach( function(i, j) {
     i.x += i.xtarget * i.speed;
     i.y += i.ytarget * i.speed;
+
+    // Check bullets location on the y axis.
+    // if it drops below 0, remove it from the array
+    if (i.y < 0)
+      bullets.splice(j, 1);
   });
 }
 

@@ -17,12 +17,10 @@ var gameTitle = "GAMEZ";
 var endMessage = "";
 var endStatsDisplay = "";
 
-var stop = false;
-var fps, fpsInterval, startTime, now, then, elapsed;
-
 function init() {  
   canvas.width = 800;
   canvas.height = 1000;
+  // add event listeners to canvas on init
   canvas.addEventListener("keydown", function (e) {
     // console.log(e);
     keys[e.code] = true;
@@ -35,7 +33,8 @@ function init() {
    Player1 = new Player(); 
   
   createNewCoins();
-  // console.log(coins);
+
+  
   setInterval(mainDraw, 20);
   playerStep();
 
@@ -161,12 +160,12 @@ function endStats() {
 function mainDraw() { 
   if (gameStart) {
     if (!gameOver) {
-      
+      console.log(bullets.length);
       playerDraw();
       drawCoins();  
       drawHUD();
-      badGuysMove();
-      badGuysDraw();
+      // badGuysMove();
+      // badGuysDraw();
       bulletsMove();
       bulletsDraw();
       if (Math.random() * 100 < 1 ) {

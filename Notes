@@ -1,10 +1,29 @@
-- hold mouse to fire 
-- destroy bullet at the edge of the canvas
+- hold mouse to fire *
+
+- destroy bullet at the edge of the canvas *
+  - Accomplished by removing the object when it exits the canvas
+
 - destroy enemies on collision (script this for one part since enemies will follow paths)
+
 - fix how the ship is fast as fuck boyyyyyyyyyyyyyyyyyyyy
-- add player1 weaponCount to increase the amount of projetiles a player fires
-- make projectile offset so they do not all fire from the same place
+
+- add player1 weaponCount to increase the amount of projetiles a player fires *
+
+
+- user weapon count in some meaningful way with power ups
+- make powerup placeholders for when projectile gets built
+
+- make projectile offset so they do not all fire from the same place *
+  - delegated spawn location in weaponLocation array
+
 - update speed by creation and velocity for setInterval on the bullet creation
+
 - change the way firing sound effects are generated to dynamically choose per character
   also, so sounds can vary beyond a single effect
+- record more sound effects
 - When player gets weapon powerup, draw addtion on ship to right, then left 
+- firing by holding down mouse button, then letting go and clicking again fires 2 shots
+  in quick succession. Do I care?
+
+- should click firerate be accelerated slightly compared to holding (like 700 for hold and 650 for clicking)?
+- 
